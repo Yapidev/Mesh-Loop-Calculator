@@ -1,18 +1,25 @@
 #include <stdio.h>
+#include <math.h>
 
 #define MAX_LOOP 10
 
-// Fungsi untuk eliminasi Gauss
+// Fungsi untuk eliminasi Gauss dengan pivoting
 void gaussElimination(int n, double a[MAX_LOOP][MAX_LOOP + 1], double result[MAX_LOOP]) {
     for (int i = 0; i < n; i++) {
-        // Mencari pivot
+        // Partial pivoting
+        int maxRow = i;
         for (int j = i + 1; j < n; j++) {
-            if (a[j][i] > a[i][i]) {
-                for (int k = 0; k <= n; k++) {
-                    double temp = a[i][k];
-                    a[i][k] = a[j][k];
-                    a[j][k] = temp;
-                }
+            if (fabs(a[j][i]) > fabs(a[maxRow][i])) {
+                maxRow = j;
+            }
+        }
+
+        // Tukar baris jika diperlukan
+        if (maxRow != i) {
+            for (int k = 0; k <= n; k++) {
+                double temp = a[i][k];
+                a[i][k] = a[maxRow][k];
+                a[maxRow][k] = temp;
             }
         }
 
@@ -36,9 +43,9 @@ void gaussElimination(int n, double a[MAX_LOOP][MAX_LOOP + 1], double result[MAX
 }
 
 int main() {
-    int n; // Jumlah loop
-    double a[MAX_LOOP][MAX_LOOP + 1]; // Matriks augmented
-    double result[MAX_LOOP]; // Hasil arus (I)
+    int n;
+    double a[MAX_LOOP][MAX_LOOP + 1];
+    double result[MAX_LOOP];
 
     printf("=== Mesh Loop Calculator ===\n");
     printf("Masukkan jumlah loop: ");
@@ -59,10 +66,8 @@ int main() {
         }
     }
 
-    // Hitung solusi menggunakan eliminasi Gauss
     gaussElimination(n, a, result);
 
-    // Tampilkan hasil
     printf("\nHasil arus (I) untuk setiap loop:\n");
     for (int i = 0; i < n; i++) {
         printf("I%d = %.2lf A\n", i + 1, result[i]);
